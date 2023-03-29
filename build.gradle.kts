@@ -74,23 +74,22 @@ allprojects {
 
     publishing {
         repositories {
-            if (!project.hasProperty("maven-user") || !project.hasProperty("maven-pass")) return@repositories
-
-            maven {
-                val repo = if (project.findProperty("isSnapshot") == "true") "snapshots" else "releases"
+            if (project.hasProperty("maven-user") && project.hasProperty("maven-secret")) maven {
+                logger.quiet("Maven user and password found.")
+                val repo = if ((version as String).endsWith("-SNAPSHOT")) "snapshots" else "releases"
 
                 isAllowInsecureProtocol = true
 
-                url = uri("http://repo.yakclient.net/$repo")
+                url = uri("http://maven.yakclient.net/$repo")
 
                 credentials {
                     username = project.findProperty("maven-user") as String
-                    password = project.findProperty("maven-pass") as String
+                    password = project.findProperty("maven-secret") as String
                 }
                 authentication {
                     create<BasicAuthentication>("basic")
                 }
-            }
+            } else logger.quiet("Maven user and password not found.")
         }
     }
 }
