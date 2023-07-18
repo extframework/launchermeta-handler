@@ -53,6 +53,14 @@ public fun parseMetadata(resource: SafeResource): LaunchMetadata {
     return mapper.readValue(resource.open())
 }
 
+public fun LaunchMetadata.assetIndex() : SafeResource {
+    return ExternalResource(URI.create(assetIndex.url), HexFormat.of().parseHex(assetIndex.checksum), "SHA1")
+}
+
+public fun parseAssetIndex(resource: SafeResource) : AssetIndex {
+    return mapper.readValue<AssetIndex>(resource.open())
+}
+
 public interface LaunchMetadataProcessor {
     public fun deriveDependencies(os: OsType, metadata: LaunchMetadata): List<MetadataLibrary>
 }

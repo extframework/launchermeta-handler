@@ -14,6 +14,14 @@ public data class LaunchMetadata(
     val downloads: Map<LaunchMetadataDownloadType, McArtifact>,
     @JsonProperty("id")
     val version: String,
+    val assetIndex: AssetIndexMetadata
+)
+
+public data class AssetIndexMetadata(
+    val id: String,
+    @JsonProperty("sha1")
+    val checksum: String,
+    val url: String,
 )
 
 public enum class LaunchMetadataDownloadType {
@@ -79,3 +87,14 @@ public data class McArtifact(
 ) {
     public fun toResource(): SafeResource = url.toResource(HexFormat.of().parseHex(checksum))
 }
+
+
+// Asset index
+public data class AssetIndex(
+    val objects: Map<String, Asset>
+)
+
+public data class Asset(
+    @JsonProperty("hash")
+    val checksum: String
+)
