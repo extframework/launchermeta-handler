@@ -14,6 +14,7 @@ tasks.wrapper {
 }
 
 dependencies {
+    implementation("com.durganmcbroom:jobs:1.2-SNAPSHOT")
     implementation("net.yakclient:common-util:1.1-SNAPSHOT")
     implementation("com.durganmcbroom:resource-api:1.0-SNAPSHOT")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.4")
@@ -28,7 +29,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-        mavenLocal()
         maven {
             isAllowInsecureProtocol = true
             url = uri("http://maven.yakclient.net/snapshots")
