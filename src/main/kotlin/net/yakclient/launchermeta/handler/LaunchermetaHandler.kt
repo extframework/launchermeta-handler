@@ -2,21 +2,18 @@
 
 package net.yakclient.launchermeta.handler
 
+import com.durganmcbroom.jobs.result
+import com.durganmcbroom.resources.*
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.runBlocking
 import net.yakclient.common.util.copyTo
-import net.yakclient.common.util.resource.ExternalResource
-import net.yakclient.common.util.resource.SafeResource
 import java.net.HttpURLConnection
-import java.net.URI
 import java.net.URL
 import java.nio.file.Path
 import java.util.*
-
-public infix fun SafeResource.copyToBlocking(to: Path): Path = runBlocking { this@copyToBlocking copyTo to }
 
 private const val LAUNCHER_META = "https://launchermeta.mojang.com/mc/game/version_manifest_v2.json"
 
@@ -26,7 +23,7 @@ private val mapper = ObjectMapper().registerModule(KotlinModule.Builder().build(
 public data class VersionManifest(
     val versions: List<VersionManifestReference>,
 ) {
-    public fun find(version: String) : VersionManifestReference? {
+    public fun find(version: String): VersionManifestReference? {
         return versions.find { version == it.id }
     }
 }
@@ -45,20 +42,24 @@ public fun loadVersionManifest(): VersionManifest {
     return mapper.readValue(conn.inputStream)
 }
 
-public fun VersionManifestReference.metadata(): SafeResource {
-    return ExternalResource(URI.create(url), HexFormat.of().parseHex(sha1), "SHA1")
+public fun VersionManifestReference.metadata(): Result<Resource> = result {
+    VerifiedResource(URL(url).toResource(), ResourceAlgorithm.SHA1, HexFormat.of().parseHex(sha1))
 }
 
-public fun parseMetadata(resource: SafeResource): LaunchMetadata {
-    return mapper.readValue(resource.open())
+public fun parseMetadata(resource: Resource): Result<LaunchMetadata> = result {
+    mapper.readValue(resource.openStream())
 }
 
-public fun LaunchMetadata.assetIndex() : SafeResource {
-    return ExternalResource(URI.create(assetIndex.url), HexFormat.of().parseHex(assetIndex.checksum), "SHA1")
+public fun LaunchMetadata.assetIndex(): Result<Resource> = result {
+    VerifiedResource(
+        URL(assetIndex.url).toResource(),
+        ResourceAlgorithm.SHA1,
+        HexFormat.of().parseHex(assetIndex.checksum),
+    )
 }
 
-public fun parseAssetIndex(resource: SafeResource) : AssetIndex {
-    return mapper.readValue<AssetIndex>(resource.open())
+public fun parseAssetIndex(resource: Resource): Result<AssetIndex> = result {
+    mapper.readValue<AssetIndex>(resource.openStream())
 }
 
 public interface LaunchMetadataProcessor {
@@ -97,14 +98,14 @@ public class DefaultMetadataProcessor : LaunchMetadataProcessor {
     }
 }
 
-public fun LaunchMetadata.clientJar(): SafeResource {
+public fun LaunchMetadata.clientJar(): Result<Resource> {
     val client = (downloads[LaunchMetadataDownloadType.CLIENT]
         ?: throw IllegalStateException("Invalid client.json manifest. Must have a client download available!"))
 
     return client.toResource()
 }
 
-public fun LaunchMetadata.clientMappings(): SafeResource {
+public fun LaunchMetadata.clientMappings(): Result<Resource> {
     val client = (downloads[LaunchMetadataDownloadType.CLIENT_MAPPINGS]
         ?: throw IllegalStateException("Invalid client.json manifest. Must have a client mappings download available!"))
 

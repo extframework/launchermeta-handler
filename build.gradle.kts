@@ -1,20 +1,21 @@
 plugins {
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.9.21"
 
     id("signing")
     id("maven-publish")
-    id("org.jetbrains.dokka") version "1.6.21"
+    id("org.jetbrains.dokka") version "1.9.10"
 }
 
 group = "net.yakclient"
-version = "1.0-SNAPSHOT"
+version = "1.1-SNAPSHOT"
 
 tasks.wrapper {
     gradleVersion = "7.2"
 }
 
 dependencies {
-    implementation("net.yakclient:common-util:1.0-SNAPSHOT")
+    implementation("net.yakclient:common-util:1.1-SNAPSHOT")
+    implementation("com.durganmcbroom:resource-api:1.0-SNAPSHOT")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.4")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
@@ -27,6 +28,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        mavenLocal()
         maven {
             isAllowInsecureProtocol = true
             url = uri("http://maven.yakclient.net/snapshots")

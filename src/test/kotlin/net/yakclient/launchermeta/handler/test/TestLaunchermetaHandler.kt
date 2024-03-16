@@ -1,5 +1,6 @@
 package net.yakclient.launchermeta.handler.test
 
+import com.durganmcbroom.jobs.launch
 import net.yakclient.launchermeta.handler.*
 import kotlin.test.Test
 
@@ -8,11 +9,14 @@ class TestLaunchermetaHandler {
     fun `Test it`() {
         fun <T> T.print(): T = also { println(it) }
 
-        val manifest = loadVersionManifest().print()
-        val metadata = manifest.find("1.19.2")!!.print()
-        val parsedMetadata = parseMetadata(metadata.metadata()).print()
-        parsedMetadata.clientJar().uri.print()
-        parsedMetadata.clientMappings().uri.print()
-        parseAssetIndex(parsedMetadata.assetIndex()).print()
+        launch {
+            val manifest = loadVersionManifest().print()
+            val metadata = manifest.find("1.20.1")!!.print()
+            val parsedMetadata = parseMetadata(metadata.metadata().merge()).merge().print()
+            parsedMetadata.clientJar().merge().location.print()
+            parsedMetadata.clientMappings().merge().location.print()
+            parseAssetIndex(parsedMetadata.assetIndex().merge()).merge().print()
+        }
+
     }
 }

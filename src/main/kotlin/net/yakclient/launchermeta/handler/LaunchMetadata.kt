@@ -1,9 +1,12 @@
 package net.yakclient.launchermeta.handler
 
+import com.durganmcbroom.jobs.result
+import com.durganmcbroom.resources.Resource
+import com.durganmcbroom.resources.ResourceAlgorithm
+import com.durganmcbroom.resources.VerifiedResource
+import com.durganmcbroom.resources.toResource
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import net.yakclient.common.util.resource.SafeResource
-import net.yakclient.common.util.toResource
 import java.net.URI
 import java.util.*
 
@@ -85,7 +88,14 @@ public data class McArtifact(
     @JsonProperty("sha1")
     val checksum: String,
 ) {
-    public fun toResource(): SafeResource = url.toResource(HexFormat.of().parseHex(checksum))
+    public fun toResource(): Result<Resource> =
+        result {
+            VerifiedResource(
+                url.toURL().toResource(),
+                ResourceAlgorithm.SHA1,
+                HexFormat.of().parseHex(checksum)
+            )
+        }
 }
 
 
