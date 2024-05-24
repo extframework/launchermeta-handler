@@ -33,8 +33,8 @@ public data class VersionManifestReference(
 public fun loadVersionManifest(): VersionManifest = URL(LAUNCHER_META).useConnection { conn ->
     if (conn.responseCode != 200) throw IllegalStateException("Failed to load launcher metadata for minecraft!")
 
-    mapper.readValue(conn.inputStream)
-}
+    mapper.readValue<VersionManifest>(conn.inputStream)
+}.use { it.value }
 
 public fun VersionManifestReference.metadata(): Result<Resource> = result {
     VerifiedResource(URL(url).toResource(), ResourceAlgorithm.SHA1, HexFormat.of().parseHex(sha1))

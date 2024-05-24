@@ -17,6 +17,5 @@ class TestLaunchermetaHandler {
             parsedMetadata.clientMappings().merge().location.print()
             parseAssetIndex(parsedMetadata.assetIndex().merge()).merge().print()
         }
-
     }
 }
