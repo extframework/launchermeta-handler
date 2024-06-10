@@ -1,7 +1,7 @@
-package net.yakclient.launchermeta.handler.test
+package dev.extframework.launchermeta.handler.test
 
 import com.durganmcbroom.jobs.launch
-import net.yakclient.launchermeta.handler.*
+import dev.extframework.launchermeta.handler.*
 import kotlin.test.Test
 
 class TestLaunchermetaHandler {

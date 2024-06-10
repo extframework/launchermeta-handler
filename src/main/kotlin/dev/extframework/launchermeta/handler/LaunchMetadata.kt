@@ -1,4 +1,4 @@
-package net.yakclient.launchermeta.handler
+package dev.extframework.launchermeta.handler
 
 import com.durganmcbroom.jobs.result
 import com.durganmcbroom.resources.Resource

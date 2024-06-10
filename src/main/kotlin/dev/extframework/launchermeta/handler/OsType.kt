@@ -1,4 +1,4 @@
-package net.yakclient.launchermeta.handler
+package dev.extframework.launchermeta.handler
 
 import java.util.*
 
