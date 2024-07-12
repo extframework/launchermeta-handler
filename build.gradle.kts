@@ -6,11 +6,11 @@ import dev.extframework.gradle.common.extFramework
 plugins {
     kotlin("jvm") version "1.9.21"
 
-    id("dev.extframework.common") version "1.0.5"
+    id("dev.extframework.common") version "1.0.7"
 }
 
 group = "dev.extframework"
-version = "1.1.2-SNAPSHOT"
+version = "1.1.3-SNAPSHOT"
 
 tasks.wrapper {
     gradleVersion = "7.2"

@@ -98,7 +98,6 @@ public data class McArtifact(
         }
 }
 
-
 // Asset index
 public data class AssetIndex(
     val objects: Map<String, Asset>
@@ -106,5 +105,6 @@ public data class AssetIndex(
 
 public data class Asset(
     @JsonProperty("hash")
-    val checksum: String
+    val checksum: String,
+    val size: Long,
 )
