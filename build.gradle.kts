@@ -6,7 +6,7 @@ import dev.extframework.gradle.common.extFramework
 plugins {
     kotlin("jvm") version "1.9.21"
 
-    id("dev.extframework.common") version "1.0.28"
+    id("dev.extframework.common") version "1.0.31"
 }
 
 group = "dev.extframework"
