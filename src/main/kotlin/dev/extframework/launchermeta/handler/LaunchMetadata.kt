@@ -7,6 +7,7 @@ import com.durganmcbroom.resources.VerifiedResource
 import com.durganmcbroom.resources.toResource
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import dev.extframework.common.util.Hex
 import java.net.URI
 import java.util.*
 
@@ -14,7 +15,8 @@ import java.util.*
 public data class LaunchMetadata(
     val mainClass: String,
     val libraries: List<MetadataLibrary>,
-    val downloads: Map<LaunchMetadataDownloadType, McArtifact>,
+
+    val downloads: Map<String, McArtifact>,
     @JsonProperty("id")
     val version: String,
     val assetIndex: AssetIndexMetadata
@@ -27,18 +29,11 @@ public data class AssetIndexMetadata(
     val url: String,
 )
 
-public enum class LaunchMetadataDownloadType {
-    @JsonProperty("client")
-    CLIENT,
-
-    @JsonProperty("client_mappings")
-    CLIENT_MAPPINGS,
-
-    @JsonProperty("server")
-    SERVER,
-
-    @JsonProperty("server_mappings")
-    SERVER_MAPPINGS
+public object LaunchMetadataDownloadType {
+    public const val CLIENT: String = "client"
+    public const val CLIENT_MAPPINGS: String = "client_mappings"
+    public const val SERVER: String = "server"
+    public const val SERVER_MAPPINGS: String = "server_mappings"
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -46,12 +41,10 @@ public data class MetadataLibrary(
     val name: String,
     val downloads: LibraryDownloads,
     @JsonProperty("extract")
-    private val _extract: LibraryExtracts?,
+    val extract: LibraryExtracts?,
     val natives: Map<String, String> = HashMap(),
     val rules: List<LibraryRule> = ArrayList()
-) {
-    val extract: LibraryExtracts = _extract ?: LibraryExtracts(listOf())
-}
+)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public data class LibraryRule(
@@ -77,7 +70,7 @@ public data class LibraryExtracts(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public data class LibraryDownloads(
-    val artifact: McArtifact,
+    val artifact: McArtifact?,
     @JsonProperty("classifiers")
     val classifiers: Map<String, McArtifact> = HashMap()
 )
@@ -93,7 +86,7 @@ public data class McArtifact(
             VerifiedResource(
                 url.toURL().toResource(),
                 ResourceAlgorithm.SHA1,
-                HexFormat.of().parseHex(checksum)
+                Hex.parseHex(checksum)
             )
         }
 }

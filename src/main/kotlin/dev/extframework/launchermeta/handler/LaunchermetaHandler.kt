@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
+import dev.extframework.common.util.Hex
 import java.net.URL
 import java.util.*
 
@@ -37,7 +38,7 @@ public fun loadVersionManifest(): VersionManifest = URL(LAUNCHER_META).useConnec
 }.use { it.value }
 
 public fun VersionManifestReference.metadata(): Result<Resource> = result {
-    VerifiedResource(URL(url).toResource(), ResourceAlgorithm.SHA1, HexFormat.of().parseHex(sha1))
+    VerifiedResource(URL(url).toResource(), ResourceAlgorithm.SHA1, Hex.parseHex(sha1))
 }
 
 public fun parseMetadata(resource: Resource): Result<LaunchMetadata> = result {
@@ -48,7 +49,7 @@ public fun LaunchMetadata.assetIndex(): Result<Resource> = result {
     VerifiedResource(
         URL(assetIndex.url).toResource(),
         ResourceAlgorithm.SHA1,
-        HexFormat.of().parseHex(assetIndex.checksum),
+        Hex.parseHex(assetIndex.checksum),
     )
 }
 
@@ -58,6 +59,8 @@ public fun parseAssetIndex(resource: Resource): Result<AssetIndex> = result {
 
 public interface LaunchMetadataProcessor {
     public fun deriveDependencies(os: OsType, metadata: LaunchMetadata): List<MetadataLibrary>
+
+    public fun deriveArtifacts(osType: OsType, metadataLibrary: MetadataLibrary): List<McArtifact>
 }
 
 
@@ -89,6 +92,20 @@ public class DefaultMetadataProcessor : LaunchMetadataProcessor {
         }
 
         return libraries
+    }
+
+    override fun deriveArtifacts(osType: OsType, metadataLibrary: MetadataLibrary): List<McArtifact> {
+        val osNames = when (OsType.type) {
+            OsType.OS_X -> listOf("osx", "macos")
+            OsType.WINDOWS -> listOf("windows")
+            OsType.UNIX -> listOf("linux")
+        }
+
+        return listOfNotNull(
+            metadataLibrary.downloads.artifact,
+            osNames.firstNotNullOfOrNull(metadataLibrary.natives::get)
+                ?.let { metadataLibrary.downloads.classifiers[it] }
+        )
     }
 }
 

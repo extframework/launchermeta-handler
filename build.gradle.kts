@@ -6,11 +6,11 @@ import dev.extframework.gradle.common.extFramework
 plugins {
     kotlin("jvm") version "1.9.21"
 
-    id("dev.extframework.common") version "1.0.20"
+    id("dev.extframework.common") version "1.0.28"
 }
 
 group = "dev.extframework"
-version = "1.1.4-SNAPSHOT"
+version = "1.2-SNAPSHOT"
 
 tasks.wrapper {
     gradleVersion = "7.2"
@@ -86,5 +86,8 @@ allprojects {
                 extFramework(credentials = propertyCredentialProvider)
             }
         }
+    }
+    java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(8))
     }
 }
